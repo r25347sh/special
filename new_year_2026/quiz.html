@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>クラスクイズ</title>
+    <link rel="stylesheet" href="all.css">
+    <style>
+        .quiz-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .options button { display: block; width: 100%; margin: 10px 0; background: #eee; border: none; padding: 10px; border-radius: 5px; cursor: pointer;}
+        .correct { background: #6ab04c !important; color: white; }
+        .wrong { background: #eb4d4b !important; color: white; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="main.html">TOP</a></li>
+            <li><a href="2025.html">振り返り</a></li>
+            <li><a href="omikuji.html">おみくじ</a></li>
+            <li><a href="quiz.html" class="active">クイズ</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2>❓ クラス王決定戦</h2>
+
+        <div class="quiz-card">
+            <p>Q1. 5月の遠足で行った場所は？</p>
+            <div class="options">
+                <button onclick="check(this, false)">上野公園</button>
+                <button onclick="check(this, true)">ディズニーランド</button> <button onclick="check(this, false)">学校の裏山</button>
+            </div>
+        </div>
+
+        <div class="quiz-card">
+            <p>Q2. 担任の先生が好きな食べ物は？</p>
+            <div class="options">
+                <button onclick="check(this, true)">カレーライス</button> <button onclick="check(this, false)">お寿司</button>
+                <button onclick="check(this, false)">プロテイン</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function check(btn, isCorrect) {
+            if(isCorrect) {
+                btn.classList.add("correct");
+                btn.innerText += " ⭕ 正解！";
+            } else {
+                btn.classList.add("wrong");
+                btn.innerText += " ❌ 残念…";
+            }
+        }
+    </script>
+</body>
+</html>
