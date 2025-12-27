@@ -5,20 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>新春おみくじ</title>
     <link rel="stylesheet" href="all.css">
-    <style>
-        .result-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
-            min-height: 150px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .big-text { font-size: 2.5rem; color: var(--primary); font-weight: bold; }
-    </style>
+    <link rel="stylesheet" href="omikuji.css">
 </head>
 <body>
     <nav>
@@ -31,22 +18,122 @@
     </nav>
 
     <div class="container">
-        <h2>🔮 運試し 2026</h2>
-        <p>ボタンを押して運勢を占おう！</p>
+        <h2>🔮 2026 運勢占い</h2>
+        <p>心を落ち着かせて引いてね</p>
 
-        <div class="result-box">
-            <div id="result-text">???</div>
+        <div class="omikuji-container">
+            <div id="box-icon" class="omikuji-box-icon">🗳️</div>
+            
+            <div id="result-display" class="result-area">
+                <div id="result-title" class="result-title"></div>
+                <div id="result-desc" class="result-desc"></div>
+            </div>
+
+            <button id="draw-btn" onclick="startOmikuji()" class="btn">おみくじを引く！</button>
         </div>
-
-        <button onclick="draw()" class="btn">引く！</button>
     </div>
 
     <script>
-        const fortunes = ["大吉: 最高の一年！", "中吉: 学食運アップ", "小吉: 遅刻ギリギリセーフ", "吉: 普通が一番", "凶: 宿題忘れるかも"];
-        
-        function draw() {
-            const result = fortunes[Math.floor(Math.random() * fortunes.length)];
-            document.getElementById("result-text").innerHTML = `<div class='big-text'>${result.split(":")[0]}</div><div>${result.split(":")[1]}</div>`;
+        // おみくじデータと確率（weightが大きいほど出やすい）
+        // weightの合計は100じゃなくても大丈夫ですが、合計に対する割合で決まります。
+        const omikujiData = [
+            { 
+                type: "大吉 ✨", 
+                text: "2026年は無敵！席替えもテストも思い通り。", 
+                weight: 10, // 確率低め（レア）
+                isSpecial: true 
+            },
+            { 
+                type: "中吉 🐴", 
+                text: "バランス良し！程よくサボって程よく頑張ろう。", 
+                weight: 20 
+            },
+            { 
+                type: "小吉 👍", 
+                text: "小さなラッキーが続く予感。購買のパンが売り切れてないとか。", 
+                weight: 35 // 一番出やすい
+            },
+            { 
+                type: "吉 😊", 
+                text: "普通が一番！平和な一年になるでしょう。", 
+                weight: 25 
+            },
+            { 
+                type: "末吉 🌱", 
+                text: "これから運気上昇。今は力を蓄えるとき（寝るなよ）。", 
+                weight: 10 
+            },
+            { 
+                type: "凶 😱", 
+                text: "逆にラッキー！？気を引き締めていけば大丈夫！", 
+                weight: 5 // かなりレア
+            }
+        ];
+
+        let isDrawing = false; // 連打防止用フラグ
+
+        function startOmikuji() {
+            if (isDrawing) return; // 実行中なら何もしない
+            isDrawing = true;
+
+            const boxIcon = document.getElementById('box-icon');
+            const resultDisplay = document.getElementById('result-display');
+            const btn = document.getElementById('draw-btn');
+
+            // 1. 結果を隠して箱を揺らす
+            resultDisplay.style.display = 'none';
+            boxIcon.classList.add('shaking'); // CSSアニメーション開始
+            btn.innerText = "ガラガラ中...";
+            btn.style.backgroundColor = "#ccc"; // ボタンを無効色に
+
+            // 2. 1.5秒後に結果を表示
+            setTimeout(() => {
+                // 揺れを止める
+                boxIcon.classList.remove('shaking');
+
+                // 確率計算して結果を取得
+                const result = getWeightedResult();
+
+                // 画面に表示
+                document.getElementById('result-title').innerText = result.type;
+                document.getElementById('result-desc').innerText = result.text;
+                
+                // 大吉なら赤く光らせるなどのクラス追加
+                if(result.isSpecial) {
+                    document.getElementById('result-title').classList.add('super-lucky');
+                } else {
+                    document.getElementById('result-title').classList.remove('super-lucky');
+                }
+
+                resultDisplay.style.display = 'block'; // 表示
+
+                // ボタンを戻す
+                btn.innerText = "もう一度引く";
+                btn.style.backgroundColor = ""; // 色を戻す
+                isDrawing = false; // ロック解除
+
+            }, 1500); // 1500ミリ秒 = 1.5秒待つ
+        }
+
+        // 確率の重みづけ抽選ロジック
+        function getWeightedResult() {
+            // 重みの合計を計算
+            let totalWeight = 0;
+            for (let i = 0; i < omikujiData.length; i++) {
+                totalWeight += omikujiData[i].weight;
+            }
+
+            // 0 〜 totalWeight の間でランダムな数を決める
+            let random = Math.floor(Math.random() * totalWeight);
+
+            // ランダムな数がどの範囲にあるか調べる
+            let currentWeight = 0;
+            for (let i = 0; i < omikujiData.length; i++) {
+                currentWeight += omikujiData[i].weight;
+                if (random < currentWeight) {
+                    return omikujiData[i];
+                }
+            }
         }
     </script>
 </body>
