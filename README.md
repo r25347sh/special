@@ -1,2 +1,2 @@
 # special
-## There are special pages.
+*There are special pages.*
